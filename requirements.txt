@@ -1,0 +1,6 @@
+flask
+notion-client
+gunicorn
+requests
+openai
+python-dotenv
