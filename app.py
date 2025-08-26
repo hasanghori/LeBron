@@ -60,7 +60,7 @@ def text_all_users():
     textbot = Textbot(reply_webhook_url)
     ai_model = AIModel()
     for user in USERS:
-        textbot.send_text(ai_model.first_message(), user)
+        textbot.send_text(ai_model.first_message("tracking daily journaling + prayer log"), user)
     return '', 200  # Respond OK so Textbelt knows you received it
 
 @app.route('/api/text_all_users_test', methods=['GET'])
