@@ -2,9 +2,6 @@
 .env
 notes.txt
 
-# Docker
-Dockerfile
-
 # Python
 __pycache__/
 *.py[cod]

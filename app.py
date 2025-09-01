@@ -17,7 +17,7 @@ load_dotenv()
 
 PUBLIC_URL = "https://textbot-service-939342988447.us-central1.run.app"
 LOCAL_URL = "https://fine-prawn-driven.ngrok-free.app"
-IS_PUBLIC = False
+IS_PUBLIC = True
 
 USERS = {"+19162206037": User("+19162206037", os.getenv("HASAN_NOTION_API_KEY"), "Hasan"),
 "+14049199353": User("+14049199353", os.getenv("FAKE_HASAN_NOTION_API_KEY"), "Fake_Hasan")}
