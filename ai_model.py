@@ -5,7 +5,10 @@ import requests
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+try:
+    load_dotenv()
+except:
+    pass
 
 # Tasks:
 # 1. Repeat messages until user responds

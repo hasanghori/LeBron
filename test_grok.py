@@ -2,7 +2,10 @@ import os
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()
+try:
+    load_dotenv()
+except:
+    pass
 
 def test_grok():
     api_key = os.getenv('GROK_API_KEY')
