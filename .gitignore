@@ -38,3 +38,6 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Firebase
+lebron-da43b-firebase-adminsdk-fbsvc-466845149c.json

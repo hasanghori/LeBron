@@ -35,9 +35,30 @@ class NotionAPI:
             print(f"🆔 ID: {db['id']}")
             print("------")
     
+    def get_all_tags(self):
+        """Retrieve all available tags from the database's Tags property"""
+        try:
+            # Get database schema to access multi-select options
+            database = self.notion.databases.retrieve(database_id=self.database_id)
+
+            # Extract Tags property options
+            tags_property = database['properties'].get('Tags', {})
+            if tags_property.get('type') == 'multi_select':
+                tag_options = tags_property['multi_select']['options']
+                return [option['name'] for option in tag_options]
+
+            return []
+
+        except APIResponseError as e:
+            logging.error("❌ Failed to retrieve tags: %s", e)
+            return []
+
+    
     def create_note_with_tags(self, content):
         try:
-            tags = [self.ai_model.choose_tag(content)]
+            all_tags = self.get_all_tags()
+            logging.info(f"All tags: {all_tags}")
+            tags = [self.ai_model.choose_tag(content, all_tags)]
             title = self.ai_model.choose_title(content)
 
             response = self.notion.pages.create(
