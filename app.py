@@ -21,7 +21,7 @@ except:
 
 PUBLIC_URL = "https://textbot-service-939342988447.us-central1.run.app"
 LOCAL_URL = "https://fine-prawn-driven.ngrok-free.app"
-IS_PUBLIC = False
+IS_PUBLIC = True
 
 cred_info = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT"])
 cred = credentials.Certificate(cred_info)
