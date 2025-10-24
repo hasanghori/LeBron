@@ -107,11 +107,20 @@ def text_all_users():
 @app.route('/api/text_all_users_test', methods=['GET'])
 def text_all_users_test():
     textbot = Textbot(reply_webhook_url)
-
     ai_model = AIModel()
-    for user in USERS:
-        if user == "+19162206037":
-            textbot.send_text(ai_model.first_message("tracking daily journaling + prayer log"), user)
+    
+    # Fetch all users from the database
+    users_ref = db.collection('users')
+    docs = users_ref.stream()
+    
+    for doc in docs:
+        user_data = doc.to_dict()
+        phone_number = user_data.get('PhoneNumber')
+        interests = user_data.get('UserInterests')
+        if phone_number == "+19162206037":
+            # textbot should send message to whatever the user wants
+            send_sms(phone_number, ai_model.first_message(interests))
+    
     return '', 200  # Respond OK so Textbelt knows you received it
 
 
