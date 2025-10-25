@@ -42,14 +42,14 @@ def send_sms(phone_number, message):
     response = textbot.send_text(message, phone_number)
     logging.info(response)
 
-#TODO: This func should send an sms to a user about a specific thing
-@app.route('/api/send_sms', methods=['POST'])
-def send_sms():
-    data = request.get_json()
-    phone_number = data.get('phone_number')
-    message = data.get('message')
-    send_sms(phone_number, message)
-    return '', 200  # Respond OK so Textbelt knows you received it
+# #TODO: This func should send an sms to a user about a specific thing
+# @app.route('/api/send_sms', methods=['POST'])
+# def send_sms():
+#     data = request.get_json()
+#     phone_number = data.get('phone_number')
+#     message = data.get('message')
+#     send_sms(phone_number, message)
+#     return '', 200  # Respond OK so Textbelt knows you received it
 
 
 # TODO: This func must fetch notion_key from userdb
