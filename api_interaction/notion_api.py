@@ -20,6 +20,7 @@ class NotionAPI:
         # self.notion_api_key = notion_api_key
         self.database_id = database_id
         self.ai_model = ai_model
+        logging.info(f"Notion API key for initialization: {notion_api_key}")
         self.notion = Client(auth=notion_api_key)
 
     def list_accessible_databases(self):
