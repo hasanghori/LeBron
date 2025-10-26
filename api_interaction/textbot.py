@@ -8,6 +8,7 @@ class Textbot:
         self.reply_webhook_url = reply_webhook_url
 
     def send_text(self, text, phone_number):
+        phone_number = phone_number.replace("+", "")
         resp = requests.post('https://textbelt.com/text', {
             'phone': phone_number,
             'message': text,
