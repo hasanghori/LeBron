@@ -1,3 +1,4 @@
+import string
 from ai_model import AIModel
 import firebase_admin
 from firebase_admin import credentials
@@ -5,13 +6,14 @@ from firebase_admin import firestore
 from flask import Flask, request, jsonify
 import json
 import logging
-from notion_api import NotionAPI
+from api_interaction.notion_api import NotionAPI
 from notion_client import Client
 import os
 import requests
-from textbot import Textbot
+from api_interaction.textbot import Textbot
 from user import User
 from dotenv import load_dotenv
+from constants.action_types import ActionType
 
 # Load environment variables
 try:
@@ -42,41 +44,37 @@ def send_sms(phone_number, message):
     response = textbot.send_text(message, phone_number)
     logging.info(response)
 
-# #TODO: This func should send an sms to a user about a specific thing
-# @app.route('/api/send_sms', methods=['POST'])
-# def send_sms():
-#     data = request.get_json()
-#     phone_number = data.get('phone_number')
-#     message = data.get('message')
-#     send_sms(phone_number, message)
-#     return '', 200  # Respond OK so Textbelt knows you received it
-
-
-# TODO: This func must fetch notion_key from userdb
-@app.route('/api/handleSmsReply', methods=['POST'])
-def handle_sms_reply():
-    print("Received reply")
-    data = request.get_json()
-    text_id = data.get('textId')
-    from_number = data.get('fromNumber')
-    text = data.get('text')
-
-    print(f"📩 Received reply from {from_number}: '{text}' (textId: {text_id})")
-    
-    ai_model = AIModel()
-    
-     # Fetch user data from database
+def find_user_key(phone_number: string, key_type: ActionType):
     users_ref = db.collection('users')
-    docs = users_ref.where('PhoneNumber', '==', from_number).stream()
+    docs = users_ref.where('PhoneNumber', '==', phone_number).stream()
     
-    notion_key = None
     for doc in docs:
         user_data = doc.to_dict()
-        notion_key = user_data.get('NotionAPI')
-        break  # Should only be one user with this phone number
+        return user_data.get(key_type)
     
-    if notion_key:
-        notion_api = NotionAPI(notion_key, database_id, ai_model)
+    return None
+
+# Core Function for this App
+# 1) Receive Message from User
+# 2) Determine Action Type
+# 3) Perform Action
+@app.route('/api/handleSmsReply', methods=['POST'])
+def handle_sms_reply():
+    data = request.get_json()
+    text_id: string = data.get('textId')
+    from_number: string = data.get('fromNumber')
+    text: string = data.get('text')
+
+    logging.info(f"📩 Received reply from {from_number}: '{text}' (textId: {text_id})")
+    
+    ai_model: AIModel = AIModel()
+    
+    action_type: ActionType = ai_model.choose_action_type(text)
+    
+    if action_type == ActionType.NOTION:
+        action_key = find_user_key(from_number, action_type)
+        # change this to programatically get the notion api key from the user
+        notion_api = NotionAPI(action_key, database_id, ai_model)
         notion_api.create_note_with_tags(text)
         send_sms(from_number, "Logged to Notion")
     else:
@@ -84,28 +82,8 @@ def handle_sms_reply():
 
     return '', 200  # Respond OK so Textbelt knows you received it
 
-
-@app.route('/api/text_all_users', methods=['GET'])
-def text_all_users():
-    textbot = Textbot(reply_webhook_url)
-    ai_model = AIModel()
-    
-    # Fetch all users from the database
-    users_ref = db.collection('users')
-    docs = users_ref.stream()
-    
-    for doc in docs:
-        user_data = doc.to_dict()
-        phone_number = user_data.get('PhoneNumber')
-        interests = user_data.get('UserInterests')
-        if phone_number:
-            # textbot should send message to whatever the user wants
-            send_sms(phone_number, ai_model.first_message(interests))
-    
-    return '', 200  # Respond OK so Textbelt knows you received it
-
-@app.route('/api/text_all_users_test', methods=['GET'])
-def text_all_users_test():
+@app.route('/api/text_test', methods=['GET'])
+def text_test():
     textbot = Textbot(reply_webhook_url)
     ai_model = AIModel()
     
@@ -119,9 +97,16 @@ def text_all_users_test():
         interests = user_data.get('UserInterests')
         if phone_number == "+19162206037":
             # textbot should send message to whatever the user wants
-            send_sms(phone_number, ai_model.first_message(interests))
+            message = ai_model.first_message(interests)
+            logging.info(f"Sending message to {phone_number}: {message}")
+            send_sms(phone_number, message)
     
     return '', 200  # Respond OK so Textbelt knows you received it
+
+#TODO: Add Registration API Call
+# Should be triggered when we receive a text from a user that is not registered
+# Should respond with probably a notion api sign in page thing/ A thing for people to sign into 
+# any Action they want
 
 
 if __name__ == '__main__':

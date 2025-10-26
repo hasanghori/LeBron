@@ -35,6 +35,7 @@ class NotionAPI:
             print(f"🆔 ID: {db['id']}")
             print("------")
     
+    # Looks like there is an error with retrieving stuff from notion
     def get_all_tags(self):
         """Retrieve all available tags from the database's Tags property"""
         try:

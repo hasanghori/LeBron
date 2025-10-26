@@ -5,6 +5,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from personality_prompt import PersonalityPrompt
+from constants.action_types import ActionType
 
 try:
     load_dotenv()
@@ -91,3 +92,6 @@ class AIModel:
             )
             
             return response.output_text
+    
+    def choose_action_type(self, user_input: str):
+        return ActionType.NOTION
