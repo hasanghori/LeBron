@@ -1,5 +1,5 @@
 from enum import Enum
 
 class ActionType(Enum):
-    NOTION = "notion"
+    NOTION = "NotionAPI"
     ERROR = "Error"
