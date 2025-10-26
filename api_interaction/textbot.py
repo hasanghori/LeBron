@@ -9,6 +9,7 @@ class Textbot:
 
     def send_text(self, text, phone_number):
         phone_number = phone_number.replace("+", "")
+        logging.info(f"Sending text to {phone_number}: {text}")
         resp = requests.post('https://textbelt.com/text', {
             'phone': phone_number,
             'message': text,

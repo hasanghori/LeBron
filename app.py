@@ -50,6 +50,7 @@ def find_user_key(phone_number: string, key_type: ActionType):
     
     for doc in docs:
         user_data = doc.to_dict()
+        logging.info(f"User data: {user_data}")
         return user_data.get(key_type)
     
     return None
@@ -73,6 +74,7 @@ def handle_sms_reply():
     
     if action_type == ActionType.NOTION:
         action_key = find_user_key(from_number, action_type)
+        logging.info(f"Action key: {action_key}")
         # change this to programatically get the notion api key from the user
         notion_api = NotionAPI(action_key, database_id, ai_model)
         notion_api.create_note_with_tags(text)
