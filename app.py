@@ -50,7 +50,6 @@ def find_user_key(phone_number: string, key_type: ActionType):
     
     for doc in docs:
         user_data = doc.to_dict()
-        logging.info(f"User data: {user_data}")
         return user_data[key_type.value]
     
     return None
@@ -86,7 +85,6 @@ def handle_sms_reply():
 
 @app.route('/api/text_test', methods=['GET'])
 def text_test():
-    textbot = Textbot(reply_webhook_url)
     ai_model = AIModel()
     
     # Fetch all users from the database
@@ -97,11 +95,12 @@ def text_test():
         user_data = doc.to_dict()
         phone_number = user_data.get('PhoneNumber')
         interests = user_data.get('UserInterests')
+        print(f"PRINT phone_number - {phone_number}")
         if phone_number == "+19162206037":
             # textbot should send message to whatever the user wants
             message = ai_model.first_message(interests)
             logging.info(f"Sending message to {phone_number}: {message}")
-            send_sms(phone_number, message)
+            send_sms("+19162206037", message)
     
     return '', 200  # Respond OK so Textbelt knows you received it
 

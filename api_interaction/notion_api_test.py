@@ -16,6 +16,7 @@ class TestNotionAPI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Set up test fixtures that are used across all tests"""
+        
         cls.notion_api_key = os.getenv('HASAN_NOTION_API_KEY')
         cls.database_id = "23eb9e96-e8f3-80a4-8b8d-c5e9cd16ef40"  # Default database from app.py
 
