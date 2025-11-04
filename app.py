@@ -50,11 +50,7 @@ def find_user_key(phone_number: string, key_type: ActionType):
     
     for doc in docs:
         user_data = doc.to_dict()
-<<<<<<< HEAD
         return user_data.get(key_type)
-=======
-        return user_data[key_type.value]
->>>>>>> ff09447e186e6d6b308497dde11c9f08f968e8a2
     
     return None
 
