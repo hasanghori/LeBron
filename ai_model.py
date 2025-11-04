@@ -5,6 +5,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from personality_prompt import PersonalityPrompt
+from constants.action_types import ActionType
 
 try:
     load_dotenv()
@@ -24,11 +25,10 @@ class AIModel:
         self.grok_api_key = os.getenv('GROK_API_KEY')
         self.grok_base_url = "https://api.x.ai/v1"
         self.grok_model = "grok-4-latest"
-        self.rude_coach_prompt = "Act as a hella rude coach who is tryna motivate me to do my habits. When I talk to you, respond in that tone. Make sure you use hella swear words."
         self.personality_prompt = PersonalityPrompt()
-        self.personality = self.personality_prompt.get_prompt("rude_coach")
+        self.personality = self.personality_prompt.get_prompt("schmidt")
 
-    def _call_grok_api(self, user_message, system_prompt=""):
+    def _call_grok_api(self, user_message: str, system_prompt: str = "") -> str:
         headers = {
             "Authorization": f"Bearer {self.grok_api_key}",
             "Content-Type": "application/json"
@@ -47,7 +47,7 @@ class AIModel:
         response.raise_for_status()
         return response.json()["choices"][0]["message"]["content"]
     
-    def first_message(self, user_interests: str):
+    def first_message(self, user_interests: str) -> str:
         user_message = f"Based on the user's interests: {user_interests}. Generate a motivating, rude question to get them started on their habits. Keep it under 100 characters. Return only the question, nothing else."
         return self._call_grok_api(user_message, self.personality)
     
@@ -91,3 +91,6 @@ class AIModel:
             )
             
             return response.output_text
+    
+    def choose_action_type(self, user_input: str):
+        return ActionType.NOTION
