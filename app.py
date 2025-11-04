@@ -66,7 +66,6 @@ def handle_sms_reply():
     text: string = data.get('text')
 
     logging.info(f"📩 Received reply from {from_number}: '{text}' (textId: {text_id})")
-<<<<<<< HEAD
     
     ai_model: AIModel = AIModel()
     
@@ -74,16 +73,6 @@ def handle_sms_reply():
     
     if action_type == ActionType.NOTION:
         action_key = find_user_key(from_number, action_type)
-=======
-    
-    ai_model: AIModel = AIModel()
-    
-    action_type: ActionType = ai_model.choose_action_type(text)
-    
-    if action_type == ActionType.NOTION:
-        action_key = find_user_key(from_number, action_type)
-        logging.info(f"Action key: {action_key}")
->>>>>>> ff09447e186e6d6b308497dde11c9f08f968e8a2
         # change this to programatically get the notion api key from the user
         notion_api = NotionAPI(action_key, database_id, ai_model)
         notion_api.create_note_with_tags(text)
@@ -95,10 +84,7 @@ def handle_sms_reply():
 
 @app.route('/api/text_test', methods=['GET'])
 def text_test():
-<<<<<<< HEAD
     textbot = Textbot(reply_webhook_url)
-=======
->>>>>>> ff09447e186e6d6b308497dde11c9f08f968e8a2
     ai_model = AIModel()
     
     # Fetch all users from the database
@@ -114,11 +100,7 @@ def text_test():
             # textbot should send message to whatever the user wants
             message = ai_model.first_message(interests)
             logging.info(f"Sending message to {phone_number}: {message}")
-<<<<<<< HEAD
             send_sms(phone_number, message)
-=======
-            send_sms("+19162206037", message)
->>>>>>> ff09447e186e6d6b308497dde11c9f08f968e8a2
     
     return '', 200  # Respond OK so Textbelt knows you received it
 
