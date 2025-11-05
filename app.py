@@ -46,11 +46,12 @@ def send_sms(phone_number, message):
 
 def find_user_key(phone_number: string, key_type: ActionType):
     users_ref = db.collection('users')
+    print(phone_number)
     docs = users_ref.where('PhoneNumber', '==', phone_number).stream()
     
     for doc in docs:
         user_data = doc.to_dict()
-        return user_data.get(key_type)
+        return user_data[key_type.value]
     
     return None
 
@@ -71,14 +72,18 @@ def handle_sms_reply():
     
     action_type: ActionType = ai_model.choose_action_type(text)
     
-    if action_type == ActionType.NOTION:
-        action_key = find_user_key(from_number, action_type)
-        # change this to programatically get the notion api key from the user
-        notion_api = NotionAPI(action_key, database_id, ai_model)
-        notion_api.create_note_with_tags(text)
-        send_sms(from_number, "Logged to Notion")
-    else:
-        send_sms(from_number, "Error: User not found in database")
+    try:
+        if action_type == ActionType.NOTION:
+            action_key = find_user_key(from_number, action_type)
+
+            notion_api = NotionAPI(action_key, database_id, ai_model)
+            notion_api.create_note_with_tags(text)
+            send_sms(from_number, "Logged to Notion")
+        else:
+            send_sms(from_number, "Error: User not found in database")
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        send_sms(from_number, "Error: " + str(e))
 
     return '', 200  # Respond OK so Textbelt knows you received it
 
