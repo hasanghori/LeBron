@@ -43,3 +43,6 @@ Thumbs.db
 lebron-da43b-firebase-adminsdk-fbsvc-466845149c.json
 
 app_test.py
+
+calendar_creds.json
+token.json

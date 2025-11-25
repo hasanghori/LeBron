@@ -14,6 +14,7 @@ from api_interaction.textbot import Textbot
 from user import User
 from dotenv import load_dotenv
 from constants.action_types import ActionType
+from api_interaction.habitify_api import HabitifyAPI
 
 # Load environment variables
 try:
@@ -55,6 +56,26 @@ def find_user_key(phone_number: string, key_type: ActionType):
     
     return None
 
+def process_habitify_action(text: str, action_key: str, ai_model: AIModel) -> dict:
+    habitify_api = HabitifyAPI(action_key)
+    
+    habitify_api.get_actions()
+    action = ai_model.choose_action(text)
+
+    if action == "create_habit":
+        habitify_api.create_habit(text)
+        return {"status": "ok", "message": "Habit created"}
+    elif action == "complete_habit":
+        habits = habitify_api.get_habits()
+        habit_id = ai_model.choose_habit_id(habits)
+        habitify_api.complete_habit(habit_id)
+        return {"status": "ok", "message": "Habit completed"}
+    elif action == "get_habits":
+        habits = habitify_api.get_habits()
+        return {"status": "ok", "habits": habits}
+    else:
+        return {"error": "Invalid action"}
+
 # Core Function for this App
 # 1) Receive Message from User
 # 2) Determine Action Type
@@ -79,6 +100,11 @@ def handle_sms_reply():
             notion_api = NotionAPI(action_key, database_id, ai_model)
             notion_api.create_note_with_tags(text)
             send_sms(from_number, "Logged to Notion")
+        elif action_type == ActionType.HABITIFY:
+            # do habitify bot interaction
+            action_key = find_user_key(from_number, action_type)
+            print("PRINT action_type - {action_type}")
+            HabitifyAPI(action_key).process_action(text)
         else:
             send_sms(from_number, "Error: User not found in database")
     except Exception as e:

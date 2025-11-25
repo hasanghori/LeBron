@@ -93,4 +93,14 @@ class AIModel:
             return response.output_text
     
     def choose_action_type(self, user_input: str):
-        return ActionType.NOTION
+        return ActionType.HABITIFY
+    
+    def habitify_action(self, user_input: str, actions: list[str]) -> str:
+        prompt = f"""Based on this text, choose the most appropriate action from these options:
+            {actions}
+            
+            Text: "{user_input}"
+            
+            Return only the action, nothing else."""
+            
+        return self._call_grok_api(prompt)
